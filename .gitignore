@@ -1,0 +1,10 @@
+# Files
+
+*.swp
+*.o
+*.l
+
+# Directories
+
+*build*
+.idea/
