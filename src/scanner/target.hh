@@ -18,15 +18,15 @@ namespace scanner
 
         std::string GetHost() const { return _host; }
         void SetHost(const std::string& newHost) { _host = newHost; }
-        int GetRangeStart() const { return _rangeStart; }
-        int GetRangeEnd() const { return _rangeEnd; }
+        size_t GetRangeStart() const { return _rangeStart; }
+        size_t GetRangeEnd() const { return _rangeEnd; }
         void SetResults(const std::pair<int, PORT_STATE> p) { _results[p.first] = p.second; }
         std::map<int, PORT_STATE> GetResults() const { return _results; }
     private:
         std::string _host;
 
-        int _rangeStart = 1;
-        int _rangeEnd = 1000;
+        size_t _rangeStart = 1;
+        size_t _rangeEnd = 1000;
 
         std::map<int, PORT_STATE> _results = std::map<int, PORT_STATE>();
     };

@@ -106,7 +106,7 @@ namespace scanner
         int sock = socket(AF_INET, SOCK_STREAM, 0);
         fcntl(sock, F_SETFL, O_NONBLOCK);
 
-        int status = connect(sock, (struct sockaddr *) &address, sizeof(address));
+        connect(sock, (struct sockaddr *) &address, sizeof(address));
 
         FD_ZERO(&fdset);
         FD_SET(sock, &fdset);
