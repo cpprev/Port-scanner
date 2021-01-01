@@ -33,4 +33,33 @@ namespace utils
     /// \param in
     /// \return
     bool CheckJSONValid(const std::string& in);
+
+    /// Copies contents in a string until next brace
+    /// \param in
+    /// \param startIndex
+    /// \param brace
+    /// \return
+    std::string CopyToNextBrace(const std::string& in, size_t& startIndex, char brace);
+
+    /// Copies contents in a string until next comma
+    /// \param in
+    /// \param startIndex
+    /// \return
+    std::string CopyToNextComma(const std::string& in, size_t& startIndex);
+
+    /// Removes the quotes from a string
+    /// \param in
+    /// \return
+    std::string RemoveQuotes(std::string in);
+
+    /// Pretty prints an option
+    /// \param optionName
+    /// \param option
+    /// \return
+    std::string PrettyPrintOption(const std::string& optionName, bool option);
+
+    /// Gets the Ip address from a host name
+    /// \param hostName
+    /// \return
+    std::string GetIpAddressFromHostname(const std::string& hostName);
 }

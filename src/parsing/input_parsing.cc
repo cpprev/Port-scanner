@@ -17,10 +17,10 @@ namespace parsing
     {
         std::string fileContents = utils::ReadFile(inputPath);
 
-        fileContents = utils::RemoveWhiteSpaces(fileContents);
-
         std::string errorMsg = "File \'" + inputPath + "\' is not in valid JSON format.";
         utils::ThrowsIfTrue(not utils::CheckJSONValid(fileContents), errorMsg);
+
+        fileContents = utils::RemoveWhiteSpaces(fileContents);
 
         return fileContents;
     }

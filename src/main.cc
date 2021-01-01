@@ -11,7 +11,11 @@ int main(int argc, char *argv[])
                             "Correct usage : ./scanner {input.json}");
 
         scanner::Scanner scanner = parsing::HandleInput(argv[1]);
-        scanner.Scan();
+
+        if (scanner.IsVerboseEnabled())
+            scanner.PrettyPrint();
+
+        scanner.ScanGlobal();
     }
     catch (const std::exception& exception)
     {

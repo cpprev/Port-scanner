@@ -11,6 +11,7 @@ include_directories(src/)
 set(SRC_FILES
         # Scanner
         src/scanner/scanner.cc
+        src/scanner/target.cc
 
         # Parsing
         src/parsing/input_parsing.cc

@@ -1,8 +1,12 @@
 {
     "Targets": [
         {
+            "Host": "127.0.0.1",
+            "PortRange": "1-7000"
+        },
+        {
             "Host": "google.com",
-            "PortRange": "1-1100"
+            "PortRange": "1-1000"
         }
     ],
     "Options": {
