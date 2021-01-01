@@ -138,7 +138,7 @@ namespace scanner
             _targets[i].SetHost(utils::GetIpAddressFromHostname(_targets[i].GetHost()));
         }
 
-        ScanGlobalNonMultithread();
+        ScanGlobalMultithread();
     }
 
     void Scanner::ScanGlobalMultithread()
