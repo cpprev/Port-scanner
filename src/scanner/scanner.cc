@@ -141,15 +141,14 @@ namespace scanner
     {
         for (const auto& target : _targets)
         {
-            std::vector<std::thread *> tasks;
+            std::vector<std::thread> tasks;
             for (size_t port = target.GetRangeStart(); port < target.GetRangeEnd(); ++port)
             {
-                tasks.push_back(new std::thread(Scan, target.GetHost(), port));
+                tasks.emplace_back(Scan, target.GetHost(), port);
             }
-            for (size_t i = 0; i < tasks.size(); ++i)
+            for (auto& task : tasks)
             {
-                tasks[i]->join();
-                delete tasks[i];
+                task.join();
             }
         }
     }
