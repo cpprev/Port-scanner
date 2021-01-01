@@ -150,9 +150,9 @@ namespace scanner
             size_t iterator = 0;
             size_t ref = 0;
             const size_t add = 1000;
-            for (; iterator < ref + add; ++iterator)
+            for (; iterator <= ref + add; ++iterator)
             {
-                if (iterator == ref + add - 1 or iterator >= rangeEnd)
+                if (iterator == ref + add or iterator > rangeEnd)
                 {
                     for (auto& task : tasks)
                     {
@@ -176,7 +176,7 @@ namespace scanner
     {
         for (const auto& target : _targets)
         {
-            for (size_t port = target->GetRangeStart(); port < target->GetRangeEnd(); ++port)
+            for (size_t port = target->GetRangeStart(); port <= target->GetRangeEnd(); ++port)
             {
                 Scan(target, port);
             }
