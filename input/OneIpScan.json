@@ -1,8 +1,8 @@
 {
     "Targets": [
         {
-            "Host": "codeforces.com",
-            "PortRange": "1-1050"
+            "Host": "92.157.124.240",
+            "PortRange": "80-88"
         }
     ],
     "Options": {

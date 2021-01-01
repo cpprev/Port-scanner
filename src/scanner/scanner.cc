@@ -147,8 +147,8 @@ namespace scanner
             std::vector<std::shared_ptr<std::thread>> tasks;
 
             size_t rangeEnd = target->GetRangeEnd();
-            size_t iterator = 0;
-            size_t ref = 0;
+            size_t iterator = target->GetRangeStart();
+            size_t ref = target->GetRangeStart();
             const size_t add = 1000;
             for (; iterator <= ref + add; ++iterator)
             {
@@ -202,6 +202,7 @@ namespace scanner
                               << " on : \033[1;33m" << target->GetHost() << "\033[0m" << "\n";
                 }
             }
+
             summary += "\033[1;34m\n[Summary for host : \033[1;33m" + target->GetHost() + "\033[1;34m]\n";
             summary += "Number of ports opened :\t\033[1;33m" + std::to_string(countOpened) + "\033[1;34m\n";
             summary += "Number of ports closed :\t\033[1;33m" + std::to_string(countClosed) + "\033[1;34m\n";
