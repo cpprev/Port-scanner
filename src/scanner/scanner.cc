@@ -93,6 +93,8 @@ namespace scanner
 
     void Scan(std::string ip, int port)
     {
+        std::cout << "port : " << port << "\n";
+
         struct sockaddr_in address;
         fd_set fdset;
         struct timeval tv;
@@ -104,7 +106,9 @@ namespace scanner
         int sock = socket(AF_INET, SOCK_STREAM, 0);
         fcntl(sock, F_SETFL, O_NONBLOCK);
 
-        connect(sock, (struct sockaddr *) &address, sizeof(address));
+        int status = connect(sock, (struct sockaddr *) &address, sizeof(address));
+        if (status == -1)
+            return;
 
         FD_ZERO(&fdset);
         FD_SET(sock, &fdset);
@@ -134,7 +138,7 @@ namespace scanner
             _targets[i].SetHost(utils::GetIpAddressFromHostname(_targets[i].GetHost()));
         }
 
-        ScanGlobalMultithread();
+        ScanGlobalNonMultithread();
     }
 
     void Scanner::ScanGlobalMultithread()
@@ -142,7 +146,34 @@ namespace scanner
         for (const auto& target : _targets)
         {
             std::vector<std::thread> tasks;
-            for (size_t port = target.GetRangeStart(); port < target.GetRangeEnd(); ++port)
+
+            size_t rangeEnd = target.GetRangeEnd();
+            size_t count = 0;
+            size_t count2 = 0;
+            size_t add = 1000;
+            for (; count < count2 + add; ++count)
+            {
+                if (count == count2 + add - 1 or count >= rangeEnd)
+                {
+                    for (auto& task : tasks)
+                    {
+                        task.join();
+                    }
+                    tasks.clear();
+                    count2 = count;
+
+                    if (count >= rangeEnd)
+                        break;
+                }
+                else
+                {
+                    tasks.emplace_back(Scan, target.GetHost(), count);
+                }
+            }
+
+            /*size_t lim1 = target.GetRangeEnd()/2;
+            size_t port = target.GetRangeStart();
+            for (; port < lim1; ++port)
             {
                 tasks.emplace_back(Scan, target.GetHost(), port);
             }
@@ -150,6 +181,16 @@ namespace scanner
             {
                 task.join();
             }
+
+            tasks.clear();
+            for (; port < target.GetRangeEnd(); ++port)
+            {
+                tasks.emplace_back(Scan, target.GetHost(), port);
+            }
+            for (auto& task : tasks)
+            {
+                task.join();
+            }*/
         }
     }
 
