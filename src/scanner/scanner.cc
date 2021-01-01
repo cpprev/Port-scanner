@@ -121,9 +121,15 @@ namespace scanner
             getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
 
             if (so_error == 0)
+            {
                 target->SetResults({port, PORT_STATE::OPENED});
+                /// TODO Figure out what service
+                /// ie : send http req and if response -> service == http
+            }
             else
+            {
                 target->SetResults({port, PORT_STATE::CLOSED});
+            }
         }
 
         close(sock);

@@ -2,7 +2,7 @@
     "Targets": [
         {
             "Host": "92.157.124.240",
-            "PortRange": "80-88"
+            "PortRange": "1-1050"
         }
     ],
     "Options": {
