@@ -2,7 +2,7 @@
     "Targets": [
         {
             "Host": "google.com",
-            "PortRange": "1-2"
+            "PortRange": "1-1000"
         }
     ],
     "Options": {

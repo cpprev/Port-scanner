@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "target.hh"
 #include "utils/utils.hh"
@@ -46,16 +47,16 @@ namespace scanner
         }
     }
 
-    std::vector<Target> Target::ParseTargets(const std::string& in)
+    std::vector<std::shared_ptr<Target>> Target::ParseTargets(const std::string& in)
     {
-        std::vector<Target> targets;
+        std::vector<std::shared_ptr<Target>> targets;
         size_t len = in.size();
         for (size_t i = 0; i < len; ++i)
         {
             char c = in[i];
             if (c == '{')
             {
-                Target target = Target(utils::CopyToNextBrace(in, i, c));
+                auto target = std::make_shared<Target>(utils::CopyToNextBrace(in, i, c));
                 targets.push_back(target);
             }
         }

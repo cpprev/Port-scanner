@@ -4,6 +4,7 @@
 #include <netdb.h>
 #include <cstring>
 #include <unistd.h>
+#include <memory>
 #include <thread>
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -13,7 +14,7 @@
 #include "target.hh"
 #include "utils/utils.hh"
 
-#define CONNECT_TIMEOUT 5
+#define CONNECT_TIMEOUT 3
 
 namespace scanner
 {
@@ -91,10 +92,9 @@ namespace scanner
         }
     }
 
-    void Scan(std::string ip, int port)
+    void Scan(std::shared_ptr<Target> target, int port)
     {
-        std::cout << "port : " << port << "\n";
-
+        std::string ip = target->GetHost();
         struct sockaddr_in address;
         fd_set fdset;
         struct timeval tv;
@@ -107,12 +107,11 @@ namespace scanner
         fcntl(sock, F_SETFL, O_NONBLOCK);
 
         int status = connect(sock, (struct sockaddr *) &address, sizeof(address));
-        if (status == -1)
-            return;
 
         FD_ZERO(&fdset);
         FD_SET(sock, &fdset);
         tv.tv_sec = CONNECT_TIMEOUT;
+        target->SetResults({port, PORT_STATE::FILTERED});
 
         if (select(sock + 1, nullptr, &fdset, nullptr, &tv) == 1)
         {
@@ -122,9 +121,9 @@ namespace scanner
             getsockopt(sock, SOL_SOCKET, SO_ERROR, &so_error, &len);
 
             if (so_error == 0)
-            {
-                std::cout << "\033[1;32m" << "Port " << port << " is OPEN (on host : " << ip << ")" << "\033[0m\n";
-            }
+                target->SetResults({port, PORT_STATE::OPENED});
+            else
+                target->SetResults({port, PORT_STATE::CLOSED});
         }
 
         close(sock);
@@ -135,7 +134,7 @@ namespace scanner
         /// Incase input host is in format : hostname.com, we need to retreive the ip
         for (size_t i = 0; i < _targets.size(); ++i)
         {
-            _targets[i].SetHost(utils::GetIpAddressFromHostname(_targets[i].GetHost()));
+            _targets[i]->SetHost(utils::GetIpAddressFromHostname(_targets[i]->GetHost()));
         }
 
         ScanGlobalMultithread();
@@ -145,9 +144,9 @@ namespace scanner
     {
         for (const auto& target : _targets)
         {
-            std::vector<std::thread> tasks;
+            std::vector<std::shared_ptr<std::thread>> tasks;
 
-            size_t rangeEnd = target.GetRangeEnd();
+            size_t rangeEnd = target->GetRangeEnd();
             size_t count = 0;
             size_t count2 = 0;
             size_t add = 1000;
@@ -157,7 +156,7 @@ namespace scanner
                 {
                     for (auto& task : tasks)
                     {
-                        task.join();
+                        task->join();
                     }
                     tasks.clear();
                     count2 = count;
@@ -167,7 +166,7 @@ namespace scanner
                 }
                 else
                 {
-                    tasks.emplace_back(Scan, target.GetHost(), count);
+                    tasks.emplace_back(std::make_shared<std::thread>(Scan, target, count));
                 }
             }
         }
@@ -177,26 +176,27 @@ namespace scanner
     {
         for (const auto& target : _targets)
         {
-            for (size_t port = target.GetRangeStart(); port < target.GetRangeEnd(); ++port)
+            for (size_t port = target->GetRangeStart(); port < target->GetRangeEnd(); ++port)
             {
-                Scan(target.GetHost(), port);
+                Scan(target, port);
             }
         }
     }
 
     void Scanner::PrettyPrint()
     {
+        std::cout << "\033[1;35m";
         int i = 1;
         for (const auto& target : _targets)
         {
             std::cout << "Target [" + std::to_string(i++) + "]\n";
-            std::cout << "Host : " << target.GetHost() << " (with Ip : " << utils::GetIpAddressFromHostname(target.GetHost()) << ")" << "\n";
-            std::cout << "Port Range : " << target.GetRangeStart() << " to " << target.GetRangeEnd() << "\n";
+            std::cout << "Host : " << target->GetHost() << " (with Ip : " << utils::GetIpAddressFromHostname(target->GetHost()) << ")" << "\n";
+            std::cout << "Port Range : " << target->GetRangeStart() << " to " << target->GetRangeEnd() << "\n";
             std::cout << "\n";
         }
 
         std::cout << utils::PrettyPrintOption("Verbose", _verbose) << "\n";
 
-        std::cout << "\n";
+        std::cout << "\033[0m" << "\n";
     }
 }

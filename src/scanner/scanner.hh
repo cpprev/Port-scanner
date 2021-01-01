@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "target.hh"
 
@@ -21,8 +22,10 @@ namespace scanner
         void PrettyPrint();
 
         bool IsVerboseEnabled() { return _verbose; }
+
+        std::vector<std::shared_ptr<Target>> GetTargets() { return _targets; }
     private:
-        std::vector<Target> _targets = std::vector<Target>();
+        std::vector<std::shared_ptr<Target>> _targets = std::vector<std::shared_ptr<Target>>();
 
         bool _verbose = false;
     };
