@@ -147,26 +147,26 @@ namespace scanner
             std::vector<std::shared_ptr<std::thread>> tasks;
 
             size_t rangeEnd = target->GetRangeEnd();
-            size_t count = 0;
-            size_t count2 = 0;
-            size_t add = 1000;
-            for (; count < count2 + add; ++count)
+            size_t iterator = 0;
+            size_t ref = 0;
+            const size_t add = 1000;
+            for (; iterator < ref + add; ++iterator)
             {
-                if (count == count2 + add - 1 or count >= rangeEnd)
+                if (iterator == ref + add - 1 or iterator >= rangeEnd)
                 {
                     for (auto& task : tasks)
                     {
                         task->join();
                     }
                     tasks.clear();
-                    count2 = count;
+                    ref = iterator;
 
-                    if (count >= rangeEnd)
+                    if (iterator >= rangeEnd)
                         break;
                 }
                 else
                 {
-                    tasks.emplace_back(std::make_shared<std::thread>(Scan, target, count));
+                    tasks.emplace_back(std::make_shared<std::thread>(Scan, target, iterator));
                 }
             }
         }
