@@ -1,4 +1,4 @@
-#include "scan.hh"
+#include "target.hh"
 
 namespace scanner
 {

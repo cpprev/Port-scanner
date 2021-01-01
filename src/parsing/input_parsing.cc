@@ -1,26 +1,32 @@
 #include <iostream>
 
 #include "input_parsing.hh"
+#include "scanner/scanner.hh"
 #include "utils/utils.hh"
 
 namespace parsing
 {
-    bool PreParseInput(const std::string& inputPath)
+    scanner::Scanner HandleInput(const std::string& inputPath)
     {
-        /// Read File
+        std::string json = PreParseInput(inputPath);
+        scanner::Scanner scanner = ParseInput(json);
+        return scanner;
+    }
+
+    std::string PreParseInput(const std::string& inputPath)
+    {
         std::string fileContents = utils::ReadFile(inputPath);
 
-        /// Remove whitespaces
         fileContents = utils::RemoveWhiteSpaces(fileContents);
 
-        std::cout << fileContents << '\n';
+        std::string errorMsg = "File \'" + inputPath + "\' is not in valid JSON format.";
+        utils::ThrowsIfTrue(not utils::CheckJSONValid(fileContents), errorMsg);
 
-        /// Check JSON validity + Check input is correct format (string where string is expected)
-        utils::ThrowsIfTrue(not utils::CheckJSONValid(fileContents), "File \'" + inputPath + "\' is not in valid JSON format.");
+        return fileContents;
+    }
 
-        /// JSON Convertion to object
-        /// TODO
-
-        return true;
+    scanner::Scanner ParseInput(const std::string& in)
+    {
+        return scanner::Scanner(in);
     }
 }

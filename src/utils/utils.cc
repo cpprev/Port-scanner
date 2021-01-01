@@ -11,9 +11,7 @@ namespace utils
     void ThrowsIfTrue(bool condition, const std::string& errorMessage)
     {
         if (condition)
-        {
-            throw std::invalid_argument(errorMessage);
-        }
+            throw std::runtime_error(errorMessage);
     }
 
     bool IsFile(const std::string& filePath)

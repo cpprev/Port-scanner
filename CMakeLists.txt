@@ -10,7 +10,7 @@ include_directories(src/)
 #List of source files
 set(SRC_FILES
         # Scanner
-        src/scanner/scan.cc
+        src/scanner/scanner.cc
 
         # Parsing
         src/parsing/input_parsing.cc
@@ -21,7 +21,7 @@ set(SRC_FILES
 
 # Compilation flags
 set(CANDY_FLAGS "-Wall -Werror -Wextra -pedantic")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CANDY_FLAGS} -std=c++17 -fsanitize=address -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${} -std=c++17 -fsanitize=address -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -march=native")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3")
 

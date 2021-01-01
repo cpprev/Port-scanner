@@ -7,15 +7,11 @@ int main(int argc, char *argv[])
 {
     try
     {
-        /// Check that args are valid
         utils::ThrowsIfTrue(argc != 2 || not utils::IsFile(argv[1]),
                             "Correct usage : ./scanner {input.json}");
 
-        /// JSON Input pre-parsing
-        parsing::PreParseInput(argv[1]);
-
-        /// Port scan
-        /// TODO
+        scanner::Scanner scanner = parsing::HandleInput(argv[1]);
+        scanner.Scan();
     }
     catch (const std::exception& exception)
     {
