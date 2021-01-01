@@ -19,6 +19,7 @@ namespace scanner
         void ScanGlobalMultithread();
         void ScanGlobalNonMultithread();
 
+        void PrintSummary();
         void PrettyPrint();
 
         bool IsVerboseEnabled() { return _verbose; }

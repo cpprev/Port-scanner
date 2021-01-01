@@ -183,6 +183,33 @@ namespace scanner
         }
     }
 
+    void Scanner::PrintSummary()
+    {
+        std::string summary;
+        for (const auto& target : GetTargets())
+        {
+            int countOpened = 0, countClosed = 0, countFiltered = 0;
+            for (const auto& result : target->GetResults())
+            {
+                auto state = result.second;
+
+                scanner::IncrementSummary(state, countOpened, countClosed, countFiltered);
+                auto stateString = scanner::StateToString(state);
+                std::string color = scanner::StateToColor(state);
+                if (state == scanner::OPENED)
+                {
+                    std::cout << color << "Port \033[1;33m" << result.first << color << " is " << stateString
+                              << " on : \033[1;33m" << target->GetHost() << "\033[0m" << "\n";
+                }
+            }
+            summary += "\033[1;34m\n[Summary for host : \033[1;33m" + target->GetHost() + "\033[1;34m]\n";
+            summary += "Number of ports opened :\t\033[1;33m" + std::to_string(countOpened) + "\033[1;34m\n";
+            summary += "Number of ports closed :\t\033[1;33m" + std::to_string(countClosed) + "\033[1;34m\n";
+            summary += "Number of ports filtered :\t\033[1;33m" + std::to_string(countFiltered) + "\033[0m" + "\n";
+        }
+        std::cout << summary;
+    }
+
     void Scanner::PrettyPrint()
     {
         std::cout << "\033[1;35m";
