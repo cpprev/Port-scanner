@@ -170,27 +170,6 @@ namespace scanner
                     tasks.emplace_back(Scan, target.GetHost(), count);
                 }
             }
-
-            /*size_t lim1 = target.GetRangeEnd()/2;
-            size_t port = target.GetRangeStart();
-            for (; port < lim1; ++port)
-            {
-                tasks.emplace_back(Scan, target.GetHost(), port);
-            }
-            for (auto& task : tasks)
-            {
-                task.join();
-            }
-
-            tasks.clear();
-            for (; port < target.GetRangeEnd(); ++port)
-            {
-                tasks.emplace_back(Scan, target.GetHost(), port);
-            }
-            for (auto& task : tasks)
-            {
-                task.join();
-            }*/
         }
     }
 
