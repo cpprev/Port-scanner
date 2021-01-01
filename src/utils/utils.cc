@@ -128,7 +128,7 @@ namespace utils
 
     std::string PrettyPrintOption(const std::string& optionName, bool option)
     {
-        return optionName + std::string( " option : ") + (option ? "enabled" : "disabled");
+        return optionName + std::string( " option : ") + (option ? "\033[1;33menabled" : "\033[1;31disabled");
     }
 
 

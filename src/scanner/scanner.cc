@@ -189,14 +189,14 @@ namespace scanner
         int i = 1;
         for (const auto& target : _targets)
         {
-            std::cout << "Target [" + std::to_string(i++) + "]\n";
-            std::cout << "Host : " << target->GetHost() << " (with Ip : " << utils::GetIpAddressFromHostname(target->GetHost()) << ")" << "\n";
-            std::cout << "Port Range : " << target->GetRangeStart() << " to " << target->GetRangeEnd() << "\n";
+            std::cout << "Target \033[1;33m[" + std::to_string(i++) + "]\033[1;35m\n";
+            std::cout << "Host : " << target->GetHost() << " (with Ip : \033[1;33m" << utils::GetIpAddressFromHostname(target->GetHost()) << "\033[1;35m)" << "\n";
+            std::cout << "Port Range : \033[1;33m" << target->GetRangeStart() << "\033[1;35m to \033[1;33m" << target->GetRangeEnd() << "\033[1;35m\n";
             std::cout << "\n";
         }
 
         std::cout << utils::PrettyPrintOption("Verbose", _verbose) << "\n";
 
-        std::cout << "\033[0m" << "\n";
+        std::cout << "\033[1;39m" << "______________________________________________" << "\033[0m" << "\n\n";
     }
 }
