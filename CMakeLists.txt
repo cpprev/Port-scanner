@@ -13,6 +13,7 @@ set(SRC_FILES
         src/scanner/scanner.cc
         src/scanner/target.cc
         src/scanner/port_state.cc
+        src/scanner/results.cc
 
         # Parsing
         src/parsing/input_parsing.cc
@@ -31,5 +32,4 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3")
 add_executable(scanner src/main.cc ${SRC_FILES})
 
 # Linked libraries targetting
-target_link_libraries(scanner tins)
 target_link_libraries(scanner pthread)

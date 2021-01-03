@@ -1,7 +1,7 @@
 {
     "Targets": [
         {
-            "Host": "92.157.124.240",
+            "Host": "epita.net",
             "PortRange": "1-1050"
         }
     ],

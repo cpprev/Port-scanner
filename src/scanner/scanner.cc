@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <mutex>
 #include <cstring>
 #include <unistd.h>
 #include <memory>
@@ -9,6 +10,8 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <future>
+#include <functional>
 
 #include "scanner.hh"
 #include "target.hh"
@@ -92,9 +95,10 @@ namespace scanner
         }
     }
 
-    void Scan(std::shared_ptr<Target> target, int port)
+    std::mutex mtx;
+
+    std::pair<int, PORT_STATE> Scan(const std::string& ip, int port)
     {
-        std::string ip = target->GetHost();
         struct sockaddr_in address;
         fd_set fdset;
         struct timeval tv;
@@ -111,8 +115,9 @@ namespace scanner
         FD_ZERO(&fdset);
         FD_SET(sock, &fdset);
         tv.tv_sec = CONNECT_TIMEOUT;
-        target->SetResults({port, PORT_STATE::FILTERED});
+        tv.tv_usec = 0;
 
+        std::pair<int, PORT_STATE> res = {};
         if (select(sock + 1, nullptr, &fdset, nullptr, &tv) == 1)
         {
             int so_error;
@@ -122,17 +127,21 @@ namespace scanner
 
             if (so_error == 0)
             {
-                target->SetResults({port, PORT_STATE::OPENED});
-                /// TODO Figure out what service
-                /// ie : send http req and if response -> service == http
+                res = {port, PORT_STATE::OPENED};
+                /// TODO Figure out what service on port
             }
             else
             {
-                target->SetResults({port, PORT_STATE::CLOSED});
+                res = {port, PORT_STATE::CLOSED};
             }
+        }
+        else
+        {
+            res = {port, PORT_STATE::FILTERED};
         }
 
         close(sock);
+        return res;
     }
 
     void Scanner::ScanGlobal()
@@ -150,6 +159,8 @@ namespace scanner
     {
         for (const auto& target : _targets)
         {
+            std::vector<std::shared_ptr<std::future<std::pair<int, PORT_STATE>>>> future;
+
             std::vector<std::shared_ptr<std::thread>> tasks;
 
             size_t rangeEnd = target->GetRangeEnd();
@@ -165,16 +176,41 @@ namespace scanner
                         task->join();
                     }
                     tasks.clear();
+
                     ref = iterator;
+                    iterator--;
 
                     if (iterator >= rangeEnd)
                         break;
                 }
                 else
                 {
-                    tasks.emplace_back(std::make_shared<std::thread>(Scan, target, iterator));
+                    std::packaged_task<std::pair<int, PORT_STATE>(const std::string&, int)> task(Scan);
+                    future.emplace_back(std::make_shared<std::future<std::pair<int, PORT_STATE>>>(task.get_future()));
+                    auto thread = std::make_shared<std::thread>(std::move(task), target->GetHost(), iterator);
+                    tasks.emplace_back(thread);
                 }
             }
+            int op = 0, cl = 0, fi = 0;
+            std::vector<int> openedPorts;
+            for (const auto& e : future)
+            {
+                auto pair = e->get();
+                if (pair.second == OPENED)
+                {
+                    op++;
+                    openedPorts.emplace_back(pair.first);
+                }
+                if (pair.second == CLOSED)
+                {
+                    cl++;
+                }
+                if (pair.second == FILTERED)
+                {
+                    fi++;
+                }
+            }
+            target->SetResults(openedPorts, op, cl, fi);
         }
     }
 
@@ -184,7 +220,7 @@ namespace scanner
         {
             for (size_t port = target->GetRangeStart(); port <= target->GetRangeEnd(); ++port)
             {
-                Scan(target, port);
+                Scan(target->GetHost(), port);
             }
         }
     }
@@ -194,25 +230,20 @@ namespace scanner
         std::string summary;
         for (const auto& target : GetTargets())
         {
-            int countOpened = 0, countClosed = 0, countFiltered = 0;
-            for (const auto& result : target->GetResults())
-            {
-                auto state = result.second;
+            auto results = target->GetResults();
 
-                scanner::IncrementSummary(state, countOpened, countClosed, countFiltered);
-                auto stateString = scanner::StateToString(state);
-                std::string color = scanner::StateToColor(state);
-                if (state == scanner::OPENED)
-                {
-                    std::cout << color << "Port \033[1;33m" << result.first << color << " is " << stateString
-                              << " on : \033[1;33m" << target->GetHost() << "\033[0m" << "\n";
-                }
+            auto color = scanner::StateToColor(OPENED);
+            auto stateString = scanner::StateToString(OPENED);
+            for (const auto& port : results.GetOpenedPorts())
+            {
+                std::cout << color << "Port \033[1;33m" << port << color << " is " << stateString
+                          << " on : \033[1;33m" << target->GetHost() << "\033[0m" << "\n";
             }
 
             summary += "\033[1;34m\n[Summary for host : \033[1;33m" + target->GetHost() + "\033[1;34m]\n";
-            summary += "Number of ports opened :\t\033[1;33m" + std::to_string(countOpened) + "\033[1;34m\n";
-            summary += "Number of ports closed :\t\033[1;33m" + std::to_string(countClosed) + "\033[1;34m\n";
-            summary += "Number of ports filtered :\t\033[1;33m" + std::to_string(countFiltered) + "\033[0m" + "\n";
+            summary += "Number of ports opened :\t\033[1;33m" + std::to_string(results.GetCountOpened()) + "\033[1;34m\n";
+            summary += "Number of ports closed :\t\033[1;33m" + std::to_string(results.GetCountClosed()) + "\033[1;34m\n";
+            summary += "Number of ports filtered :\t\033[1;33m" + std::to_string(results.GetCountFiltered()) + "\033[0m" + "\n";
         }
         std::cout << summary;
     }
