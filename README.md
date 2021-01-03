@@ -9,7 +9,19 @@
 ### How to build & Usage
 
     mkdir build && cd build/ && cmake .. && make -j && ./scanner {input.json}
-    
-    See examples of input files in input/ directory.
+
+    Example of the contents of an input file :
+    "input.json" :
+    {
+        "Targets": [
+            {
+                "Host": "google.com",
+                "PortRange": "1-1050"
+            }
+        ],
+        "Options": {
+            "Verbose": true
+        }
+    } 
 ---
 
