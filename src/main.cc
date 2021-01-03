@@ -17,8 +17,7 @@ int main(int argc, char *argv[])
 
         scanner.ScanGlobal();
 
-        if (scanner.IsVerboseEnabled())
-            scanner.PrintSummary();
+        scanner.PrintSummary();
     }
     catch (const std::exception& exception)
     {
