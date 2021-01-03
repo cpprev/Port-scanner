@@ -16,6 +16,7 @@
 #include "scanner.hh"
 #include "target.hh"
 #include "utils/utils.hh"
+#include "utils/get_service_for_port.hh"
 
 #define CONNECT_TIMEOUT 3
 
@@ -128,7 +129,6 @@ namespace scanner
             if (so_error == 0)
             {
                 res = {port, PORT_STATE::OPENED};
-                /// TODO Figure out what service on port
             }
             else
             {
@@ -237,7 +237,7 @@ namespace scanner
             for (const auto& port : results.GetOpenedPorts())
             {
                 std::cout << color << "Port \033[1;33m" << port << color << " is " << stateString
-                          << " on : \033[1;33m" << target->GetHost() << "\033[0m" << "\n";
+                          << " on : \033[1;33m" << target->GetHost() << color << " (service running : " << "\033[1;33m" << utils::GetServiceForPort(port) << color << ")" << "\033[0m" << "\n";
             }
 
             summary += "\033[1;34m\n[Summary for host : \033[1;33m" + target->GetHost() + "\033[1;34m]\n";
