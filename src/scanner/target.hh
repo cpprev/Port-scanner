@@ -13,16 +13,18 @@ namespace scanner
     class Target
     {
     public:
+        Target() = default;
         Target(const std::string& in);
-        static std::vector<std::shared_ptr<Target>> ParseTargets(const std::string& in);
-        void AddCustomAttribute(const std::string& key, const std::string& value);
 
         std::string GetHost() const { return _host; }
-        void SetHost(const std::string& newHost) { _host = newHost; }
         size_t GetRangeStart() const { return _rangeStart; }
         size_t GetRangeEnd() const { return _rangeEnd; }
-        void SetResults(std::vector<int> openedPorts, int countOpened, int countClosed, int countFiltered) { _results = Results(openedPorts, countOpened, countClosed, countFiltered); }
         Results GetResults() const { return _results; }
+
+        void SetHost(const std::string& newHost) { _host = newHost; }
+        void SetRangeStart(size_t rangeStart) { _rangeStart = rangeStart; }
+        void SetRangeEnd(size_t rangeEnd) { _rangeEnd = rangeEnd; }
+        void SetResults(std::vector<int> openedPorts, int countOpened, int countClosed, int countFiltered) { _results = Results(openedPorts, countOpened, countClosed, countFiltered); }
     private:
         std::string _host;
 

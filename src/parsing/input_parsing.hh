@@ -16,8 +16,11 @@ namespace parsing
     /// \return
     std::string PreParseInput(const std::string& inputPath);
 
-    /// Parses a JSON file
-    /// \param in
-    /// \return
-    scanner::Scanner ParseInput(const std::string& in);
+    scanner::Scanner ParseScanner(const std::string& in);
+
+    void ParseOptions(scanner::Scanner& scanner, const std::string& in);
+
+    scanner::Target ParseTarget(const std::string& in);
+
+    std::vector<std::shared_ptr<scanner::Target>> ParseTargets(const std::string& in);
 }

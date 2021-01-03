@@ -15,6 +15,7 @@
 
 #include "scanner.hh"
 #include "target.hh"
+#include "parsing/input_parsing.hh"
 #include "utils/utils.hh"
 #include "utils/get_service_for_port.hh"
 
@@ -24,76 +25,7 @@ namespace scanner
 {
     Scanner::Scanner(const std::string& in)
     {
-        size_t len = in.size();
-        std::string key, value;
-        for (size_t i = 0; i < len; ++i)
-        {
-            char c = in[i];
-            if (c == ':')
-            {
-                value = utils::CopyToNextComma(in, ++i);
-                AddCustomAttribute(key, value);
-
-                key.clear();
-                value.clear();
-            }
-            else
-            {
-                if (c != '"' and c != '{' and c != '}' and c != '[' and c != ']')
-                    key += c;
-            }
-        }
-    }
-
-    void Scanner::ParseOptions(const std::string& in)
-    {
-        size_t len = in.size();
-        std::string key, value;
-        for (size_t i = 0; i < len; ++i)
-        {
-            char c = in[i];
-            if (c == ':')
-            {
-                value = utils::CopyToNextComma(in, ++i);
-                AddCustomOption(key, utils::RemoveQuotes(value));
-
-                key.clear();
-                value.clear();
-            }
-            else
-            {
-                if (c != '"' and c != '{' and c != '}' and c != '[' and c != ']')
-                    key += c;
-            }
-        }
-    }
-
-    void Scanner::AddCustomAttribute(const std::string& key, const std::string& value)
-    {
-        if (key == "Targets")
-        {
-            _targets = Target::ParseTargets(value);
-        }
-        else if (key == "Options")
-        {
-            ParseOptions(value);
-        }
-        else
-        {
-            throw std::runtime_error("Unknown Scanner class attribute \'" + key + "\'");
-        }
-    }
-
-    void Scanner::AddCustomOption(const std::string& key, const std::string& value)
-    {
-        if (key == "Verbose")
-        {
-            _verbose = value == "true";
-        }
-        else
-        {
-            throw std::runtime_error("Unknown Scanner class option \'" + key + "\'");
-        }
+        *this = parsing::ParseScanner(in);
     }
 
     std::pair<int, PORT_STATE> Scan(const std::string& ip, int port)
