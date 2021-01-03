@@ -41,36 +41,6 @@ namespace parsing
         }
     }
 
-    void ScannerAddCustomOption(scanner::Scanner& scanner, const std::string& key, const std::string& value)
-    {
-        if (key == "Verbose")
-        {
-            scanner.SetVerbose(value == "true");
-        }
-        else
-        {
-            throw std::runtime_error("Unknown Scanner class option \'" + key + "\'");
-        }
-    }
-
-    void TargetAddCustomAttribute(scanner::Target& target, const std::string& key, const std::string& value)
-    {
-        if (key == "Host")
-        {
-            target.SetHost(utils::RemoveQuotes(value));
-        }
-        else if (key == "PortRange")
-        {
-            std::string::size_type ind = value.find('-');
-            target.SetRangeStart(std::atoi(value.substr(0, ind).c_str()));
-            target.SetRangeEnd(std::atoi(value.substr(ind + 1).c_str()));
-        }
-        else
-        {
-            throw std::runtime_error("Unknown Target class attribute \'" + key + "\'");
-        }
-    }
-
     scanner::Scanner ParseScanner(const std::string& in)
     {
         scanner::Scanner scanner;
@@ -96,6 +66,18 @@ namespace parsing
         return scanner;
     }
 
+    void ScannerAddCustomOption(scanner::Scanner& scanner, const std::string& key, const std::string& value)
+    {
+        if (key == "Verbose")
+        {
+            scanner.SetVerbose(value == "true");
+        }
+        else
+        {
+            throw std::runtime_error("Unknown Scanner class option \'" + key + "\'");
+        }
+    }
+
     void ParseOptions(scanner::Scanner& scanner, const std::string& in)
     {
         size_t len = in.size();
@@ -116,6 +98,24 @@ namespace parsing
                 if (c != '"' and c != '{' and c != '}' and c != '[' and c != ']')
                     key += c;
             }
+        }
+    }
+
+    void TargetAddCustomAttribute(scanner::Target& target, const std::string& key, const std::string& value)
+    {
+        if (key == "Host")
+        {
+            target.SetHost(utils::RemoveQuotes(value));
+        }
+        else if (key == "PortRange")
+        {
+            std::string::size_type ind = value.find('-');
+            target.SetRangeStart(std::atoi(value.substr(0, ind).c_str()));
+            target.SetRangeEnd(std::atoi(value.substr(ind + 1).c_str()));
+        }
+        else
+        {
+            throw std::runtime_error("Unknown Target class attribute \'" + key + "\'");
         }
     }
 
