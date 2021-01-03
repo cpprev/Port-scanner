@@ -96,8 +96,6 @@ namespace scanner
         }
     }
 
-    std::mutex mtx;
-
     std::pair<int, PORT_STATE> Scan(const std::string& ip, int port)
     {
         struct sockaddr_in address;
