@@ -12,6 +12,7 @@ namespace utils
         { 22, "ssh" },
         { 23, "telnet" },
         { 25, "smtp" },
+        { 31, "msg-auth" },
         { 53, "dns" },
         { 63, "whois" },
         { 80, "http" },
