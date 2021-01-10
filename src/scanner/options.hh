@@ -8,7 +8,6 @@ namespace scanner
     {
     public:
         Options() = default;
-        Options(bool verbose, int scanTimeout) : _verbose(verbose), _scanTimeout(scanTimeout) {}
 
         int GetTimeout() const { return _scanTimeout; }
         void SetTimeout(int timeout) { _scanTimeout = timeout; }
