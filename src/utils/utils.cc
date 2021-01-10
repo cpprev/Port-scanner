@@ -157,4 +157,16 @@ namespace utils
     {
         utils::ThrowsIfTrue(in != "true" and in != "false", error);
     }
+
+    std::string ToLower(const std::string& in)
+    {
+        std::string copy = in;
+        transform(copy.begin(), copy.end(), copy.begin(), ::tolower);
+        return copy;
+    }
+
+    bool CompareStringsInvariantCase(const std::string& s1, const std::string& s2)
+    {
+        return ToLower(s1) == ToLower(s2);
+    }
 }

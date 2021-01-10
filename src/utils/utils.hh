@@ -71,4 +71,15 @@ namespace utils
     /// If input is not a bool, throw
     /// \param in
     void ThrowIfBoolNotValid(const std::string& in, const std::string& error);
+
+    /// Converts a string to lowercase
+    /// \param in
+    /// \return
+    std::string ToLower(const std::string& in);
+
+    /// Compares two strings ignoring cases
+    /// \param s1
+    /// \param s2
+    /// \return
+    bool CompareStringsInvariantCase(const std::string& s1, const std::string& s2);
 }

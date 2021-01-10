@@ -27,11 +27,11 @@ namespace parsing
 
     void ScannerAddCustomAttribute(scanner::Scanner& scanner, const std::string& key, const std::string& value)
     {
-        if (key == "Targets")
+        if (utils::CompareStringsInvariantCase(key, "Targets"))
         {
             scanner.SetTargets(parsing::ParseTargets(value));
         }
-        else if (key == "Options")
+        else if (utils::CompareStringsInvariantCase(key, "Options"))
         {
             auto options = parsing::ParseOptions(value);
             scanner.SetOptions(options);
@@ -44,17 +44,17 @@ namespace parsing
 
     void OptionsAddCustomAttribute(scanner::Options& options, const std::string& key, const std::string& value)
     {
-        if (key == "Verbose")
+        if (utils::CompareStringsInvariantCase(key, "Verbose"))
         {
             utils::ThrowIfBoolNotValid(value, "Wrong value for 'verbose' option.");
             options.SetVerbose(value == "true");
         }
-        else if (key == "Multithreading")
+        else if (utils::CompareStringsInvariantCase(key, "Multithreading"))
         {
             utils::ThrowIfBoolNotValid(value, "Wrong value for 'multithreading' option.");
             options.SetMultithreading(value == "true");
         }
-        else if (key == "Timeout")
+        else if (utils::CompareStringsInvariantCase(key, "Timeout"))
         {
             int timeout = std::atoi(value.c_str());
             utils::ThrowsIfTrue(timeout <= 0 or timeout > 10, "Timeout value must be bound from 0 to 10 seconds.");
@@ -68,11 +68,11 @@ namespace parsing
 
     void TargetAddCustomAttribute(scanner::Target& target, const std::string& key, const std::string& value)
     {
-        if (key == "Host")
+        if (utils::CompareStringsInvariantCase(key, "Host"))
         {
             target.SetHost(utils::RemoveQuotes(value));
         }
-        else if (key == "PortRange")
+        else if (utils::CompareStringsInvariantCase(key, "PortRange"))
         {
             std::string::size_type ind = value.find('-');
             int rangeStart = std::atoi(value.substr(0, ind).c_str());
