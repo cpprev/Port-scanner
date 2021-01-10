@@ -20,7 +20,8 @@
             }
         ],
         "Options": {
-            "Verbose": true
+            "Verbose": true,
+            "Timeout": 3
         }
     } 
 ---
