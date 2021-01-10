@@ -12,6 +12,7 @@ set(SRC_FILES
         # Scanner
         src/scanner/scanner.cc
         src/scanner/target.cc
+        src/scanner/options.cc
         src/scanner/port_state.cc
         src/scanner/results.cc
 
@@ -20,6 +21,7 @@ set(SRC_FILES
 
         # Utils
         src/utils/utils.cc
+        src/utils/globals.cc
         )
 
 # Compilation flags

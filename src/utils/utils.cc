@@ -143,4 +143,9 @@ namespace utils
 
         return ip;
     }
+
+    bool IsIgnoreJsonChar(char c)
+    {
+        return c != '"' and c != '{' and c != '}' and c != '[' and c != ']';
+    }
 }

@@ -62,4 +62,9 @@ namespace utils
     /// \param hostName
     /// \return
     std::string GetIpAddressFromHostname(const std::string& hostName);
+
+    /// True if c is considered a character to ignore ('"', '{', ...)
+    /// \param c
+    /// \return
+    bool IsIgnoreJsonChar(char c);
 }

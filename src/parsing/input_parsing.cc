@@ -33,12 +33,55 @@ namespace parsing
         }
         else if (key == "Options")
         {
-            parsing::ParseOptions(scanner, value);
+            auto options = parsing::ParseOptions(value);
+            scanner.SetOptions(options);
         }
         else
         {
             throw std::runtime_error("Unknown Scanner class attribute \'" + key + "\'");
         }
+    }
+
+    void OptionsAddCustomAttribute(scanner::Options& options, const std::string& key, const std::string& value)
+    {
+        if (key == "Verbose")
+        {
+            options.SetVerbose(value == "true");
+        }
+        else if (key == "Timeout")
+        {
+            options.SetTimeout(std::atoi(value.c_str()));
+        }
+        else
+        {
+            throw std::runtime_error("Unknown Options class attribute \'" + key + "\'");
+        }
+    }
+
+    scanner::Options ParseOptions(const std::string& in)
+    {
+        scanner::Options options;
+        size_t len = in.size();
+        std::string key, value;
+        for (size_t i = 0; i < len; ++i)
+        {
+            char c = in[i];
+            if (c == ':')
+            {
+                value = utils::CopyToNextComma(in, ++i);
+
+                OptionsAddCustomAttribute(options, key, value);
+
+                key.clear();
+                value.clear();
+            }
+            else
+            {
+                if (utils::IsIgnoreJsonChar(c))
+                    key += c;
+            }
+        }
+        return options;
     }
 
     scanner::Scanner ParseScanner(const std::string& in)
@@ -52,6 +95,7 @@ namespace parsing
             if (c == ':')
             {
                 value = utils::CopyToNextComma(in, ++i);
+
                 ScannerAddCustomAttribute(scanner, key, value);
 
                 key.clear();
@@ -59,46 +103,11 @@ namespace parsing
             }
             else
             {
-                if (c != '"' and c != '{' and c != '}' and c != '[' and c != ']')
+                if (utils::IsIgnoreJsonChar(c))
                     key += c;
             }
         }
         return scanner;
-    }
-
-    void ScannerAddCustomOption(scanner::Scanner& scanner, const std::string& key, const std::string& value)
-    {
-        if (key == "Verbose")
-        {
-            scanner.SetVerbose(value == "true");
-        }
-        else
-        {
-            throw std::runtime_error("Unknown Scanner class option \'" + key + "\'");
-        }
-    }
-
-    void ParseOptions(scanner::Scanner& scanner, const std::string& in)
-    {
-        size_t len = in.size();
-        std::string key, value;
-        for (size_t i = 0; i < len; ++i)
-        {
-            char c = in[i];
-            if (c == ':')
-            {
-                value = utils::CopyToNextComma(in, ++i);
-                ScannerAddCustomOption(scanner, key, utils::RemoveQuotes(value));
-
-                key.clear();
-                value.clear();
-            }
-            else
-            {
-                if (c != '"' and c != '{' and c != '}' and c != '[' and c != ']')
-                    key += c;
-            }
-        }
     }
 
     void TargetAddCustomAttribute(scanner::Target& target, const std::string& key, const std::string& value)
@@ -137,7 +146,7 @@ namespace parsing
             }
             else
             {
-                if (c != '"' and c != '{' and c != '}' and c != '[' and c != ']')
+                if (utils::IsIgnoreJsonChar(c))
                     key += c;
             }
         }

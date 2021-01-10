@@ -2,6 +2,8 @@
 
 #include "parsing/input_parsing.hh"
 #include "utils/utils.hh"
+#include "utils/globals.hh"
+#include "scanner/scanner.hh"
 
 int main(int argc, char *argv[])
 {
@@ -10,14 +12,14 @@ int main(int argc, char *argv[])
         utils::ThrowsIfTrue(argc != 2 || not utils::IsFile(argv[1]),
                             "Correct usage : ./scanner {input.json}");
 
-        scanner::Scanner scanner = parsing::HandleInput(argv[1]);
+        g_Scanner = parsing::HandleInput(argv[1]);
 
-        if (scanner.IsVerboseEnabled())
-            scanner.PrettyPrint();
+        if (g_Scanner->GetOptions().IsVerboseEnabled())
+            g_Scanner->PrettyPrint();
 
-        scanner.ScanGlobal();
+        g_Scanner->ScanGlobal();
 
-        scanner.PrintSummary();
+        g_Scanner->PrintSummary();
     }
     catch (const std::exception& exception)
     {

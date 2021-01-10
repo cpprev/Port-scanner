@@ -1,8 +1,6 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h>
-#include <mutex>
 #include <cstring>
 #include <unistd.h>
 #include <memory>
@@ -15,11 +13,11 @@
 
 #include "scanner.hh"
 #include "target.hh"
+#include "options.hh"
 #include "parsing/input_parsing.hh"
 #include "utils/utils.hh"
+#include "utils/globals.hh"
 #include "utils/get_service_for_port.hh"
-
-#define CONNECT_TIMEOUT 3
 
 namespace scanner
 {
@@ -45,7 +43,7 @@ namespace scanner
 
         FD_ZERO(&fdset);
         FD_SET(sock, &fdset);
-        tv.tv_sec = CONNECT_TIMEOUT;
+        tv.tv_sec = g_Scanner->GetOptions().GetTimeout();
         tv.tv_usec = 0;
 
         std::pair<int, PORT_STATE> res = {};
@@ -190,7 +188,8 @@ namespace scanner
             std::cout << "\n";
         }
 
-        std::cout << utils::PrettyPrintOption("Verbose", _verbose) << "\n";
+        std::cout << "\033[1;35m" << "Scan timeout (in seconds) : \033[1;33m" << _options.GetTimeout() << "\n";
+        std::cout << "\033[1;35m" << utils::PrettyPrintOption("Verbose", _options.IsVerboseEnabled()) << "\n";
 
         std::cout << "\033[1;39m" << "______________________________________________" << "\033[0m" << "\n\n";
     }
