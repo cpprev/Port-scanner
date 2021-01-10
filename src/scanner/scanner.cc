@@ -26,20 +26,29 @@ namespace scanner
         *this = parsing::ParseScanner(in);
     }
 
-    std::pair<int, PORT_STATE> Scan(const std::string& ip, int port)
+    std::pair<int, PORT_STATE> Scan(const std::string& ip, int port, bool ipv6)
     {
-        struct sockaddr_in address;
         fd_set fdset;
         struct timeval tv;
 
-        address.sin_family = AF_INET;
-        address.sin_addr.s_addr = inet_addr(ip.c_str());
-        address.sin_port = htons(port);
+        int sock = -1;
+        if (not ipv6)
+        {
+            struct sockaddr_in address;
+            address.sin_family = AF_INET;
+            address.sin_addr.s_addr = inet_addr(ip.c_str());
+            address.sin_port = htons(port);
 
-        int sock = socket(AF_INET, SOCK_STREAM, 0);
-        fcntl(sock, F_SETFL, O_NONBLOCK);
+            sock = socket(AF_INET, SOCK_STREAM, 0);
 
-        connect(sock, (struct sockaddr *) &address, sizeof(address));
+            fcntl(sock, F_SETFL, O_NONBLOCK);
+
+            connect(sock, (struct sockaddr *) &address, sizeof(address));
+        }
+        else
+        {
+            /// TODO Ipv6 (will have to switch to getaddrinfo to support ipv6)
+        }
 
         FD_ZERO(&fdset);
         FD_SET(sock, &fdset);
@@ -77,7 +86,7 @@ namespace scanner
         /// Incase input host is in format : hostname.com, we need to retreive the ip
         for (size_t i = 0; i < _targets.size(); ++i)
         {
-            _targets[i]->SetHost(utils::GetIpAddressFromHostname(_targets[i]->GetHost()));
+            _targets[i]->SetHost(utils::GetIpAddressFromHostname(_targets[i]->GetHost(), _targets[i]->IsIpv6()));
         }
 
         if (g_Scanner->GetOptions().IsMultithreadingEnabled())
@@ -116,9 +125,9 @@ namespace scanner
                 }
                 else
                 {
-                    std::packaged_task<std::pair<int, PORT_STATE>(const std::string&, int)> task(Scan);
+                    std::packaged_task<std::pair<int, PORT_STATE>(const std::string&, int, bool)> task(Scan);
                     future.emplace_back(std::make_shared<std::future<std::pair<int, PORT_STATE>>>(task.get_future()));
-                    auto thread = std::make_shared<std::thread>(std::move(task), target->GetHost(), iterator);
+                    auto thread = std::make_shared<std::thread>(std::move(task), target->GetHost(), iterator, target->IsIpv6());
                     tasks.emplace_back(thread);
                 }
             }
@@ -151,7 +160,7 @@ namespace scanner
         {
             for (size_t port = target->GetRangeStart(); port <= target->GetRangeEnd(); ++port)
             {
-                Scan(target->GetHost(), port);
+                Scan(target->GetHost(), port, target->IsIpv6());
             }
         }
     }
@@ -188,7 +197,7 @@ namespace scanner
         for (const auto& target : _targets)
         {
             summary += "Target \033[1;33m[" + std::to_string(i++) + "]\033[1;35m\n";
-            summary += "Host : " + target->GetHost() + " (with Ip : \033[1;33m" + utils::GetIpAddressFromHostname(target->GetHost()) + "\033[1;35m)" + "\n";
+            summary += "Host : " + target->GetHost() + " (with Ip : \033[1;33m" + utils::GetIpAddressFromHostname(target->GetHost(), target->IsIpv6()) + "\033[1;35m)" + (target->IsIpv6() ? " (ipv6)" : "") + "\n";
             summary += "Port Range : \033[1;33m" + std::to_string(target->GetRangeStart()) + "\033[1;35m to \033[1;33m" + std::to_string(target->GetRangeEnd()) + "\033[1;35m\n";
             summary += "\n";
         }

@@ -61,7 +61,7 @@ namespace utils
     /// Gets the Ip address from a host name
     /// \param hostName
     /// \return
-    std::string GetIpAddressFromHostname(const std::string& hostName);
+    std::string GetIpAddressFromHostname(const std::string& hostName, bool ipv6);
 
     /// True if c is considered a character to ignore ('"', '{', ...)
     /// \param c

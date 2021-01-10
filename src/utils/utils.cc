@@ -136,8 +136,11 @@ namespace utils
     }
 
 
-    std::string GetIpAddressFromHostname(const std::string& hostName)
+    std::string GetIpAddressFromHostname(const std::string& hostName, bool ipv6)
     {
+        /// TODO handle ipv6 (with getaddrinfo since gethostbyname does not support ipv6)
+        (void) ipv6;
+
         struct hostent *hp = gethostbyname(hostName.c_str());
 
         ThrowsIfTrue(not hp, hostName + " was not resolved\n");

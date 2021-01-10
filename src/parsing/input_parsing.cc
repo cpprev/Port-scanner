@@ -72,6 +72,10 @@ namespace parsing
         {
             target.SetHost(utils::RemoveQuotes(value));
         }
+        else if (utils::CompareStringsInvariantCase(key, "Ipv6"))
+        {
+            target.SetIpv6(value == "true");
+        }
         else if (utils::CompareStringsInvariantCase(key, "PortRange"))
         {
             std::string::size_type ind = value.find('-');
