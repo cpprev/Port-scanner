@@ -178,19 +178,23 @@ namespace scanner
 
     void Scanner::PrettyPrint()
     {
-        std::cout << "\033[1;35m";
+        std::string summary;
+
+        summary += "\033[1;35m";
         int i = 1;
         for (const auto& target : _targets)
         {
-            std::cout << "Target \033[1;33m[" + std::to_string(i++) + "]\033[1;35m\n";
-            std::cout << "Host : " << target->GetHost() << " (with Ip : \033[1;33m" << utils::GetIpAddressFromHostname(target->GetHost()) << "\033[1;35m)" << "\n";
-            std::cout << "Port Range : \033[1;33m" << target->GetRangeStart() << "\033[1;35m to \033[1;33m" << target->GetRangeEnd() << "\033[1;35m\n";
-            std::cout << "\n";
+            summary += "Target \033[1;33m[" + std::to_string(i++) + "]\033[1;35m\n";
+            summary += "Host : " + target->GetHost() + " (with Ip : \033[1;33m" + utils::GetIpAddressFromHostname(target->GetHost()) + "\033[1;35m)" + "\n";
+            summary += "Port Range : \033[1;33m" + std::to_string(target->GetRangeStart()) + "\033[1;35m to \033[1;33m" + std::to_string(target->GetRangeEnd()) + "\033[1;35m\n";
+            summary += "\n";
         }
 
-        std::cout << "\033[1;35m" << "Scan timeout (in seconds) : \033[1;33m" << _options.GetTimeout() << "\n";
-        std::cout << "\033[1;35m" << utils::PrettyPrintOption("Verbose", _options.IsVerboseEnabled()) << "\n";
+        summary += "\033[1;35mScan timeout (in seconds) : \033[1;33m" + std::to_string(_options.GetTimeout()) + "\n";
+        summary += "\033[1;35m" + utils::PrettyPrintOption("Verbose", _options.IsVerboseEnabled()) + "\n";
 
-        std::cout << "\033[1;39m" << "______________________________________________" << "\033[0m" << "\n\n";
+        summary += "\033[1;39m______________________________________________\033[0m\n\n";
+
+        std::cout << summary;
     }
 }

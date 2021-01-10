@@ -46,15 +46,41 @@ namespace parsing
     {
         if (key == "Verbose")
         {
+            utils::ThrowsIfTrue(value != "true" and value != "false", "Wrong value for verbose option.");
             options.SetVerbose(value == "true");
         }
         else if (key == "Timeout")
         {
-            options.SetTimeout(std::atoi(value.c_str()));
+            int timeout = std::atoi(value.c_str());
+            utils::ThrowsIfTrue(timeout <= 0 or timeout > 10, "Timeout value must be bound from 0 to 10 seconds.");
+            options.SetTimeout(timeout);
         }
         else
         {
             throw std::runtime_error("Unknown Options class attribute \'" + key + "\'");
+        }
+    }
+
+    void TargetAddCustomAttribute(scanner::Target& target, const std::string& key, const std::string& value)
+    {
+        if (key == "Host")
+        {
+            target.SetHost(utils::RemoveQuotes(value));
+        }
+        else if (key == "PortRange")
+        {
+            std::string::size_type ind = value.find('-');
+            int rangeStart = std::atoi(value.substr(0, ind).c_str());
+            int rangeEnd = std::atoi(value.substr(ind + 1).c_str());
+            utils::ThrowsIfTrue(rangeStart < 0 or rangeEnd > 65535, "Port range start must be bound from 0 to 65535.");
+            utils::ThrowsIfTrue(rangeEnd < 0 or rangeEnd > 65535, "Port range end must be bound from 0 to 65535.");
+            utils::ThrowsIfTrue(rangeEnd < rangeStart, "Port range start must be lower than port range end.");
+            target.SetRangeStart(rangeStart);
+            target.SetRangeEnd(rangeEnd);
+        }
+        else
+        {
+            throw std::runtime_error("Unknown Target class attribute \'" + key + "\'");
         }
     }
 
@@ -70,7 +96,7 @@ namespace parsing
             {
                 value = utils::CopyToNextComma(in, ++i);
 
-                OptionsAddCustomAttribute(options, key, value);
+                OptionsAddCustomAttribute(options, key, utils::RemoveQuotes(value));
 
                 key.clear();
                 value.clear();
@@ -96,7 +122,7 @@ namespace parsing
             {
                 value = utils::CopyToNextComma(in, ++i);
 
-                ScannerAddCustomAttribute(scanner, key, value);
+                ScannerAddCustomAttribute(scanner, key, utils::RemoveQuotes(value));
 
                 key.clear();
                 value.clear();
@@ -108,24 +134,6 @@ namespace parsing
             }
         }
         return scanner;
-    }
-
-    void TargetAddCustomAttribute(scanner::Target& target, const std::string& key, const std::string& value)
-    {
-        if (key == "Host")
-        {
-            target.SetHost(utils::RemoveQuotes(value));
-        }
-        else if (key == "PortRange")
-        {
-            std::string::size_type ind = value.find('-');
-            target.SetRangeStart(std::atoi(value.substr(0, ind).c_str()));
-            target.SetRangeEnd(std::atoi(value.substr(ind + 1).c_str()));
-        }
-        else
-        {
-            throw std::runtime_error("Unknown Target class attribute \'" + key + "\'");
-        }
     }
 
     scanner::Target ParseTarget(const std::string& in)
