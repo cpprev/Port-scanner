@@ -80,7 +80,10 @@ namespace scanner
             _targets[i]->SetHost(utils::GetIpAddressFromHostname(_targets[i]->GetHost()));
         }
 
-        ScanGlobalMultithread();
+        if (g_Scanner->GetOptions().IsMultithreadingEnabled())
+            ScanGlobalMultithread();
+        else
+            ScanGlobalNonMultithread();
     }
 
     void Scanner::ScanGlobalMultithread()
@@ -191,6 +194,7 @@ namespace scanner
         }
 
         summary += "\033[1;35mScan timeout (in seconds) : \033[1;33m" + std::to_string(_options.GetTimeout()) + "\n";
+        summary += "\033[1;35m" + utils::PrettyPrintOption("Multithreading", _options.IsMultithreadingEnabled()) + "\n";
         summary += "\033[1;35m" + utils::PrettyPrintOption("Verbose", _options.IsVerboseEnabled()) + "\n";
 
         summary += "\033[1;39m______________________________________________\033[0m\n\n";

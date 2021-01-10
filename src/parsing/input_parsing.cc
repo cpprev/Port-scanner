@@ -46,8 +46,13 @@ namespace parsing
     {
         if (key == "Verbose")
         {
-            utils::ThrowsIfTrue(value != "true" and value != "false", "Wrong value for verbose option.");
+            utils::ThrowIfBoolNotValid(value, "Wrong value for 'verbose' option.");
             options.SetVerbose(value == "true");
+        }
+        else if (key == "Multithreading")
+        {
+            utils::ThrowIfBoolNotValid(value, "Wrong value for 'multithreading' option.");
+            options.SetMultithreading(value == "true");
         }
         else if (key == "Timeout")
         {

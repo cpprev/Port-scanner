@@ -128,7 +128,11 @@ namespace utils
 
     std::string PrettyPrintOption(const std::string& optionName, bool option)
     {
-        return optionName + std::string( " option : ") + (option ? "\033[1;33menabled" : "\033[1;31disabled");
+        if (optionName == "Multithreading" and not option)
+        {
+            std::cout << "\033[1;31mWarning : Having multithreading disabled makes the program extremely slow, consider enabling it or lowering the port range.\033[0m\n";
+        }
+        return optionName + std::string( " option : ") + (option ? "\033[1;33menabled" : "\033[1;31mdisabled");
     }
 
 
@@ -147,5 +151,10 @@ namespace utils
     bool IsIgnoreJsonChar(char c)
     {
         return c != '"' and c != '{' and c != '}' and c != '[' and c != ']';
+    }
+
+    void ThrowIfBoolNotValid(const std::string& in, const std::string& error)
+    {
+        utils::ThrowsIfTrue(in != "true" and in != "false", error);
     }
 }

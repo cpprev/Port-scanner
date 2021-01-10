@@ -21,6 +21,7 @@
         ],
         "Options": {
             "Verbose": true,
+            "Multithreading": true,
             "Timeout": 3
         }
     } 

@@ -67,4 +67,8 @@ namespace utils
     /// \param c
     /// \return
     bool IsIgnoreJsonChar(char c);
+
+    /// If input is not a bool, throw
+    /// \param in
+    void ThrowIfBoolNotValid(const std::string& in, const std::string& error);
 }
