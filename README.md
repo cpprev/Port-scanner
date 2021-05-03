@@ -1,4 +1,4 @@
-# Port-scanner project [Started 31/12/2020]
+# Port-scanner project
 ---
 
 :pushpin: The Project was implemented in C++.
